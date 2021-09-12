@@ -8,7 +8,7 @@ class IndexBuffer
 {
 public:
 
-	IndexBuffer(uint64_t size);
+	IndexBuffer(uint32_t count);
 
 	~IndexBuffer();
 
@@ -16,9 +16,11 @@ public:
 
 	void Unbind() const;
 
-	void StreamData(const void* data, uint64_t size, int64_t offset);
+	void StreamData(const void* data, uint32_t size, int32_t offset);
 
 private:
+
 	unsigned int m_rendererID;
+	
 };
 

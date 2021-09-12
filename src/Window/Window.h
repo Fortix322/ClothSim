@@ -30,6 +30,8 @@ public:
 
 	virtual void SetUserPointer(void* pointer) = 0;
 
+	virtual void MakeContextCurrent() = 0;
+
 	virtual void* GetNativeWindow() = 0;
 
 	virtual ~Window() {}

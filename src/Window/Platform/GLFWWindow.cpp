@@ -19,6 +19,8 @@ GLFWWindow::GLFWWindow(WinProps props)
 
     m_wndHandle = glfwCreateWindow(props.width, props.height, props.name, NULL, NULL);
     s_glfwInstances++;
+
+    glfwSetWindowSizeCallback(m_wndHandle, GLFWWindow::ResizeCallback);
 }
 
 GLFWWindow::~GLFWWindow()
@@ -65,4 +67,16 @@ int GLFWWindow::GetHeight()
 
 void GLFWWindow::SetUserPointer(void* pointer)
 {
+    glfwSetWindowUserPointer(m_wndHandle, pointer);
+}
+
+void GLFWWindow::MakeContextCurrent()
+{
+    glfwMakeContextCurrent(m_wndHandle);
+}
+
+void GLFWWindow::ResizeCallback(GLFWwindow* window, int width, int height)
+{
+    if(window == glfwGetCurrentContext())
+        glViewport(0, 0, width, height);
 }

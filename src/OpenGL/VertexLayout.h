@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+
 #include "glad/glad.h"
 
 struct VertexLayoutElements 
@@ -42,21 +43,21 @@ public:
 	void Push<float>(uint32_t count)
 	{
 		m_elements.push_back({ GL_FLOAT, count, false });
-		m_stride += count * GetSizeOfType(GL_FLOAT);
+		m_stride += count * VertexLayoutElements::GetSizeOfType(GL_FLOAT);
 	}
 
 	template<>
 	void Push<unsigned int>(uint32_t count)
 	{
 		m_elements.push_back({ GL_UNSIGNED_INT, count, false });
-		m_stride += count * GetSizeOfType(GL_UNSIGNED_INT);
+		m_stride += count * VertexLayoutElements::GetSizeOfType(GL_UNSIGNED_INT);
 	}
 
 	template<>
 	void Push<unsigned char>(uint32_t count)
 	{
 		m_elements.push_back({ GL_UNSIGNED_BYTE, count, true });
-		m_stride += count * GetSizeOfType(GL_UNSIGNED_BYTE);
+		m_stride += count * VertexLayoutElements::GetSizeOfType(GL_UNSIGNED_BYTE);
 	}
 
 	const std::vector<VertexLayoutElements>& GetElements() const { return m_elements; }

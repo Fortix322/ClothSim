@@ -1,6 +1,6 @@
 #include "IndexBuffer.h"
 
-IndexBuffer::IndexBuffer(uint64_t count)
+IndexBuffer::IndexBuffer(uint32_t count)
 {
 	glCreateBuffers(1, &m_rendererID);
 	Bind();
@@ -22,7 +22,7 @@ void IndexBuffer::Unbind() const
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void IndexBuffer::StreamData(const void* data, uint64_t size, int64_t offset)
+void IndexBuffer::StreamData(const void* data, uint32_t size, int32_t offset)
 {
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, size, data);
 }

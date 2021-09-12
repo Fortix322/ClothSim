@@ -4,6 +4,8 @@
 
 #include "src/Window/Window.h"
 
+#include "glad/glad.h"
+
 #include "GLFW/glfw3.h"
 
 #pragma comment(lib, "RayCasting/vendor/GLFW/include/GLFW/glfw3.lib")
@@ -26,7 +28,13 @@ public:
 
 	void SetUserPointer(void* pointer) override;
 
+	void MakeContextCurrent() override;
+
 	void* GetNativeWindow() override { return m_wndHandle; }
+
+private:
+
+	static void ResizeCallback(GLFWwindow* window, int width, int height);
 
 private:
 

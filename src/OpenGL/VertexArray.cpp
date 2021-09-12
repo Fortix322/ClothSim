@@ -10,12 +10,12 @@ VertexArray::~VertexArray()
 	glDeleteVertexArrays(1, &m_rendererID);
 }
 
-void VertexArray::AddBuffer(const VertexBuffer& buffer, const VertexLayout layout)
+void VertexArray::AddBuffer(const VertexBuffer& buffer, const VertexLayout& layout)
 {
 	buffer.Bind();
 	const auto& elements = layout.GetElements();
-	uint32_t offset = 0;
-	for (size_t i = 0; i < elements.size(); i++)
+	uint64_t offset = 0;
+	for (uint32_t i = 0; i < elements.size(); i++)
 	{
 		glEnableVertexAttribArray(i);
 		glVertexAttribPointer(i, elements[i].count, elements[i].type, elements[i].normalized, layout.GetStride(), (const void*)offset);
