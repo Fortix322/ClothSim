@@ -29,7 +29,7 @@ private:
 
 	uint32_t offset = 0;
 
-	static const uint32_t s_MaxQubes = 100;
+	static const uint32_t s_MaxQubes = 1;
 	static const uint32_t s_VertBufSize = s_MaxQubes * 4 * sizeof(Vertex);
 	static const uint32_t s_IndBufSize = s_MaxQubes * 6;
 

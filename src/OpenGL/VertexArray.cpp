@@ -3,10 +3,12 @@
 VertexArray::VertexArray()
 {
 	glCreateVertexArrays(1, &m_rendererID);
+	Bind();
 }
 
 VertexArray::~VertexArray()
 {
+	Unbind();
 	glDeleteVertexArrays(1, &m_rendererID);
 }
 
@@ -19,6 +21,7 @@ void VertexArray::AddBuffer(const VertexBuffer& buffer, const VertexLayout& layo
 	{
 		glEnableVertexAttribArray(i);
 		glVertexAttribPointer(i, elements[i].count, elements[i].type, elements[i].normalized, layout.GetStride(), (const void*)offset);
+
 		offset += elements[i].count * elements[i].GetSizeOfType(elements[i].type);
 	}
 }

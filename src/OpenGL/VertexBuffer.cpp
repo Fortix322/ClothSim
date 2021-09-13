@@ -9,6 +9,7 @@ VertexBuffer::VertexBuffer(uint32_t size)
 
 VertexBuffer::~VertexBuffer()
 {
+	Unbind();
 	glDeleteBuffers(1, &m_rendererID);
 }
 

@@ -1,8 +1,8 @@
-asd[
+#version 330 core
 
-as[da
-sd[
-sa[d
-f[sad
-g[asd
-]]]]]]
+out vec4 color;
+
+void main()
+{
+	color = vec4(0.5f, 0.0f, 0.0f, 0.5f);
+}  

@@ -37,7 +37,6 @@ void Shader::Unbind()
 
 ShaderSources Shader::ReadShadersFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile) 
 {
-	
 	std::fstream stream;
 	std::string buffer;
 	std::stringstream shaderStr[2];
@@ -56,7 +55,7 @@ ShaderSources Shader::ReadShadersFromFiles(const std::string& vertShaderFile, co
 	while (!stream.eof())
 	{
 		std::getline(stream, buffer);
-		shaderStr[0] << buffer;
+		shaderStr[0] << buffer << '\n';
 	}
 
 	stream.close();
@@ -74,7 +73,7 @@ ShaderSources Shader::ReadShadersFromFiles(const std::string& vertShaderFile, co
 	while (!stream.eof())
 	{
 		std::getline(stream, buffer);
-		shaderStr[1] << buffer;
+		shaderStr[1] << buffer << '\n';
 	}
 
 	return { shaderStr[0].str(), shaderStr[1].str() };
@@ -91,6 +90,18 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& str)
 	glShaderSource(shader, 1, &source, NULL);
 
 	glCompileShader(shader);
+
+
+	int  success;
+	char infoLog[512];
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+
+
+	if (!success)
+	{
+		glGetShaderInfoLog(shader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
 
 	return shader;
 }

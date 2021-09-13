@@ -1,8 +1,13 @@
 #include "BatchRenderer.h"
 
 BatchRenderer::BatchRenderer(const char* vertShader, const char* fragShader) 
-	: m_IndexBuffer(s_IndBufSize), m_VertexBuffer(s_VertBufSize), m_ShaderProgram(vertShader, fragShader)
+	: m_ShaderProgram(vertShader, fragShader), m_VertexArray(), m_VertexBuffer(s_VertBufSize), m_IndexBuffer(s_IndBufSize)
 {
+
+	m_VertexArray.Bind();
+	m_VertexBuffer.Bind();
+	m_IndexBuffer.Bind();
+
 	std::array<unsigned int, s_IndBufSize> indicies;
 	
 	uint32_t offset = 0;
@@ -12,17 +17,14 @@ BatchRenderer::BatchRenderer(const char* vertShader, const char* fragShader)
 		indicies[1 + i] = 1 + offset;
 		indicies[2 + i] = 2 + offset;
 
-		indicies[1 + i] = 1 + offset;
-		indicies[2 + i] = 2 + offset;
-		indicies[3 + i] = 3 + offset;
+		indicies[3 + i] = 1 + offset;
+		indicies[4 + i] = 2 + offset;
+		indicies[5 + i] = 3 + offset;
 
 		offset += 4;
 	}
 
-	m_VertexArray.Bind();
-	m_VertexBuffer.Bind();
-
-	m_IndexBuffer.StreamData(indicies.data(), indicies.size(), 0);
+	m_IndexBuffer.StreamData(indicies.data(), indicies.size() * sizeof(unsigned int), 0);
 }
 
 BatchRenderer::~BatchRenderer()
@@ -31,14 +33,14 @@ BatchRenderer::~BatchRenderer()
 
 void BatchRenderer::Draw()
 {
-	glClearColor(0.5f, 0.1f, 0.7f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	m_ShaderProgram.Bind();
-	m_IndexBuffer.Bind();
-	m_VertexArray.Bind();
-	glDrawElements(GL_TRIANGLES, s_IndBufSize, GL_UNSIGNED_INT, 0);
-	Flush();
+	//m_ShaderProgram.Bind();
+	//m_VertexArray.Bind();
+	//m_IndexBuffer.Bind();
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	//Flush();
 }
 
 void BatchRenderer::Flush()
@@ -48,7 +50,7 @@ void BatchRenderer::Flush()
 
 void BatchRenderer::StreamData(const void* data, uint32_t size)
 {
-	m_VertexBuffer.StreamData(0, size, offset);
+	m_VertexBuffer.StreamData(data, size, offset);
 
 	offset += size;
 
