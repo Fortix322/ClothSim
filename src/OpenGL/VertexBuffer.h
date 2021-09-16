@@ -20,6 +20,6 @@ public:
 	void StreamData(const void* data, uint32_t size, int32_t offset);
 
 private:
-	unsigned int m_rendererID;
+	unsigned int m_RendererID;
 };
 

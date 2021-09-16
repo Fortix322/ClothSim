@@ -2,17 +2,17 @@
 
 Shader::Shader(const std::string& vertShaderFile, const std::string& fragShaderFile) 
 {
-	m_rendererID = glCreateProgram();
+	m_RendererID = glCreateProgram();
 
 	ShaderSources shaders = ReadShadersFromFiles(vertShaderFile, fragShaderFile);
 
 	unsigned int vertShader = CompileShader(GL_VERTEX_SHADER, shaders.VertexShader);
 	unsigned int fragShader = CompileShader(GL_FRAGMENT_SHADER, shaders.FragmentShader);
 
-	glAttachShader(m_rendererID, vertShader);
-	glAttachShader(m_rendererID, fragShader);
+	glAttachShader(m_RendererID, vertShader);
+	glAttachShader(m_RendererID, fragShader);
 
-	glLinkProgram(m_rendererID);
+	glLinkProgram(m_RendererID);
 
 	Bind();
 
@@ -22,12 +22,12 @@ Shader::Shader(const std::string& vertShaderFile, const std::string& fragShaderF
 
 Shader::~Shader()
 {
-	glDeleteProgram(m_rendererID);
+	glDeleteProgram(m_RendererID);
 }
 
 void Shader::Bind()
 {
-	glUseProgram(m_rendererID);
+	glUseProgram(m_RendererID);
 }
 
 void Shader::Unbind()

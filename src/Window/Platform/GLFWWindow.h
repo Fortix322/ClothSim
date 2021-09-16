@@ -30,7 +30,7 @@ public:
 
 	void MakeContextCurrent() override;
 
-	void* GetNativeWindow() override { return m_wndHandle; }
+	void* GetNativeWindow() override { return m_WndHandle; }
 
 private:
 
@@ -38,6 +38,6 @@ private:
 
 private:
 
-	GLFWwindow* m_wndHandle;
+	GLFWwindow* m_WndHandle;
 };
 

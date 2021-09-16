@@ -2,7 +2,7 @@
 
 VertexBuffer::VertexBuffer(uint32_t size)
 {
-	glCreateBuffers(1, &m_rendererID);
+	glCreateBuffers(1, &m_RendererID);
 	Bind();
 	glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 }
@@ -10,12 +10,12 @@ VertexBuffer::VertexBuffer(uint32_t size)
 VertexBuffer::~VertexBuffer()
 {
 	Unbind();
-	glDeleteBuffers(1, &m_rendererID);
+	glDeleteBuffers(1, &m_RendererID);
 }
 
 void VertexBuffer::Bind() const
 {
-	glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
+	glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 }
 
 void VertexBuffer::Unbind() const

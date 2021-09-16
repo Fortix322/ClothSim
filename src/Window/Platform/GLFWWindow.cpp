@@ -1,6 +1,6 @@
 #include "GLFWWindow.h"
 
-static uint8_t s_glfwInstances = 0;
+static uint8_t s_GlfwInstances = 0;
 
 Window* Window::Create(WinProps props)
 {
@@ -9,7 +9,7 @@ Window* Window::Create(WinProps props)
 
 GLFWWindow::GLFWWindow(WinProps props)
 {
-    if (s_glfwInstances == 0) 
+    if (s_GlfwInstances == 0)
     {
         if (!glfwInit()) 
         {
@@ -17,18 +17,18 @@ GLFWWindow::GLFWWindow(WinProps props)
         }
     }
 
-    m_wndHandle = glfwCreateWindow(props.width, props.height, props.name, NULL, NULL);
-    s_glfwInstances++;
+    m_WndHandle = glfwCreateWindow(props.width, props.height, props.name, NULL, NULL);
+    s_GlfwInstances++;
 
-    glfwSetWindowSizeCallback(m_wndHandle, GLFWWindow::ResizeCallback);
+    glfwSetWindowSizeCallback(m_WndHandle, GLFWWindow::ResizeCallback);
 }
 
 GLFWWindow::~GLFWWindow()
 {
-    if (m_wndHandle) Shutdown();
+    if (m_WndHandle) Shutdown();
 
-    s_glfwInstances--;
-    if (s_glfwInstances == 0)
+    s_GlfwInstances--;
+    if (s_GlfwInstances == 0)
     {
         glfwTerminate();
     }
@@ -38,20 +38,20 @@ GLFWWindow::~GLFWWindow()
 void GLFWWindow::OnUpdate()
 {
     glfwPollEvents();
-    glfwSwapBuffers(m_wndHandle);
+    glfwSwapBuffers(m_WndHandle);
 }
 
 void GLFWWindow::Shutdown() 
 {
-    glfwDestroyWindow(m_wndHandle);
-    m_wndHandle = 0;
+    glfwDestroyWindow(m_WndHandle);
+    m_WndHandle = 0;
 }
 
 int GLFWWindow::GetWidth()
 {
     int height, width;
 
-    glfwGetFramebufferSize(m_wndHandle, &width, &height);
+    glfwGetFramebufferSize(m_WndHandle, &width, &height);
 
     return width;
 }
@@ -60,19 +60,19 @@ int GLFWWindow::GetHeight()
 {
     int height, width;
 
-    glfwGetFramebufferSize(m_wndHandle, &width, &height);
+    glfwGetFramebufferSize(m_WndHandle, &width, &height);
 
     return height;
 }
 
 void GLFWWindow::SetUserPointer(void* pointer)
 {
-    glfwSetWindowUserPointer(m_wndHandle, pointer);
+    glfwSetWindowUserPointer(m_WndHandle, pointer);
 }
 
 void GLFWWindow::MakeContextCurrent()
 {
-    glfwMakeContextCurrent(m_wndHandle);
+    glfwMakeContextCurrent(m_WndHandle);
 }
 
 void GLFWWindow::ResizeCallback(GLFWwindow* window, int width, int height)

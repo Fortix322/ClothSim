@@ -32,6 +32,6 @@ private:
 	unsigned int CompileShader(unsigned int type, const std::string& str);
 
 private:
-	unsigned int m_rendererID;
+	unsigned int m_RendererID;
 };
 

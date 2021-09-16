@@ -18,6 +18,6 @@ public:
 	void Unbind() const;
 
 private:
-	unsigned int m_rendererID;
+	unsigned int m_RendererID;
 };
 

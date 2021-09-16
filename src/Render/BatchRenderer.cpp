@@ -39,13 +39,14 @@ void BatchRenderer::Draw()
 	//m_ShaderProgram.Bind();
 	//m_VertexArray.Bind();
 	//m_IndexBuffer.Bind();
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, s_IndBufSize, GL_UNSIGNED_INT, 0);
 	//Flush();
 }
 
 void BatchRenderer::Flush()
 {
-	m_VertexBuffer.StreamData(0, s_MaxQubes * 4 * sizeof(Vertex), 0);
+	offset = 0;
+	m_VertexBuffer.StreamData(0, s_VertBufSize, 0);
 }
 
 void BatchRenderer::StreamData(const void* data, uint32_t size)
