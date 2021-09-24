@@ -3,6 +3,9 @@
 #include <array>
 #include "src/OpenGL/OpenGL.h"
 
+#include "vendor/glm/glm/glm.hpp"
+#include "vendor/glm/glm/gtx/projection.hpp"
+
 class BatchRenderer
 {
 public:
@@ -32,6 +35,7 @@ private:
 	static const uint32_t s_MaxQubes = 100;
 	static const uint32_t s_VertBufSize = s_MaxQubes * 4 * sizeof(Vertex);
 	static const uint32_t s_IndBufSize = s_MaxQubes * 6;
+
 
 };
 

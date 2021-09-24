@@ -35,6 +35,14 @@ void Shader::Unbind()
 	glUseProgram(0);
 }
 
+void Shader::UniformMat4(const std::string& name, float* data)
+{
+	unsigned int location;
+	location = glGetUniformLocation(m_RendererID, name.c_str());
+
+	glUniformMatrix4fv(location, 1, GL_FALSE, data);
+}
+
 ShaderSources Shader::ReadShadersFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile) 
 {
 	std::fstream stream;

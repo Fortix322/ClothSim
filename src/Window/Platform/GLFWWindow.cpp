@@ -77,6 +77,8 @@ void GLFWWindow::MakeContextCurrent()
 
 void GLFWWindow::ResizeCallback(GLFWwindow* window, int width, int height)
 {
-    if(window == glfwGetCurrentContext())
+    if (window == glfwGetCurrentContext())
+    {
         glViewport(0, 0, width, height);
+    }
 }

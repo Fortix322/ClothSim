@@ -70,17 +70,11 @@ int main()
 		 0.4f, -0.5f, 0.0f,
 		 0.8f,  0.5f, 0.0f,
 		 0.4f,  0.5f, 0.0f
-	};
-
-	unsigned int ind[] =
-	{
-		0, 1, 2,
-		1, 2, 3
 	};*/
 
 	render.SetLayout(Vertex::GetLayout());
 
-	while (!glfwWindowShouldClose((GLFWwindow*)win->GetNativeWindow()))
+	while (!glfwWindowShouldClose((GLFWwindow*)win->GetNativeWindow())) 
 	{
 		auto test = CreateParticles(particles.GetPositions());
 		render.StreamData(test.data(), test.size() * sizeof(Vertex));
@@ -92,5 +86,6 @@ int main()
 	}
 
 	win->Shutdown();
+
 	delete win;
 }
