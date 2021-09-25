@@ -16,15 +16,17 @@ static glm::vec3 clamp(const glm::vec3& vec, const glm::vec3& min, const glm::ve
 }
 
 ParticleSystem::ParticleSystem()
-	: m_Forces(s_MaxParticles), m_ParticlesPos(s_MaxParticles), m_OldParticlesPos(s_MaxParticles)
+	: m_Forces(s_MaxParticles), m_ParticlesPos(s_MaxParticles), m_OldParticlesPos(s_MaxParticles), m_Mass(s_MaxParticles)
 {
 	for (size_t i = 0; i < s_MaxParticles; i++)
 	{
 		m_ParticlesPos[i] = glm::vec3(0.0f + i * 0.2f, 0.0f, 0.0f);
 		m_OldParticlesPos[i] = glm::vec3(0.0f + i * 0.2f, 0.0f, 0.0f);
+		m_Mass[i] = 1.0f;
 	}
 
 	m_Joins.push_back(Joint(0, 1, 0.5f));
+	m_Mass[0] = 1.0f;
 }
 
 ParticleSystem::~ParticleSystem()
@@ -78,12 +80,10 @@ void ParticleSystem::SatisfyConstraints()
 		{
 			glm::vec3 delta = m_ParticlesPos[m_Joins[i].rPointInd] - m_ParticlesPos[m_Joins[i].lPointInd];
 			float deltaLen = sqrt(glm::dot(delta, delta));
-			float diff = (deltaLen - m_Joins[i].distance) / deltaLen;
-			delta *= 0.5;
-			m_ParticlesPos[m_Joins[i].lPointInd] += delta * 0.5f * diff;
-			m_ParticlesPos[m_Joins[i].rPointInd] -= delta * 0.5f * diff;
+			float diff = (deltaLen - m_Joins[i].distance) / (deltaLen * (m_Mass[m_Joins[i].rPointInd] + m_Mass[m_Joins[i].lPointInd]));
+			m_ParticlesPos[m_Joins[i].lPointInd] += delta * m_Mass[m_Joins[i].lPointInd] * diff;
+			m_ParticlesPos[m_Joins[i].rPointInd] -= delta * m_Mass[m_Joins[i].rPointInd] * diff;
 		}
 
-		m_ParticlesPos[0] *= 0.0f;
 	}
 }

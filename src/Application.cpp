@@ -74,6 +74,14 @@ int main()
 
 	render.SetLayout(Vertex::GetLayout());
 
+	Renderer::Init;
+
+	Renderer::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, {0.0f, 0.0f, 0.0f, 1.0f}, 0);
+
+	Renderer::Flush();
+
+	Renderer::Clear();
+
 	while (!glfwWindowShouldClose((GLFWwindow*)win->GetNativeWindow())) 
 	{
 		auto test = CreateParticles(particles.GetPositions());

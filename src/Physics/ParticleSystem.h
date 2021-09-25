@@ -43,6 +43,7 @@ private:
 	std::vector<glm::vec3> m_ParticlesPos;
 	std::vector<glm::vec3> m_OldParticlesPos;
 	std::vector<glm::vec3> m_Forces;
+	std::vector<float> m_Mass;
 
 	std::vector<Joint> m_Joins;
 
