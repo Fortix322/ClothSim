@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "vendor/glm/glm/vec3.hpp"
-#include "vendor/glm/glm/geometric.hpp"
+#include "glm/glm/vec3.hpp"
+#include "glm/glm/geometric.hpp"
 
 class ParticleSystem
 {

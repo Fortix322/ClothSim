@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "glad/glad.h"
+#include "Glad/include/glad/glad.h"
 
 
 class VertexBuffer
@@ -16,6 +16,8 @@ public:
 	void Bind() const;
 
 	void Unbind() const;
+
+	void InvalidateBufferData() const;
 
 	void StreamData(const void* data, uint32_t size, int32_t offset);
 

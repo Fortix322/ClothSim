@@ -1,8 +1,8 @@
 #pragma once
 
-#include "glad/glad.h"
-
 #include <cstdint>
+
+#include "Glad/include/glad/glad.h"
 
 class IndexBuffer
 {
@@ -16,7 +16,7 @@ public:
 
 	void Unbind() const;
 
-	void StreamData(const void* data, uint32_t size, int32_t offset);
+	void StreamData(const void* data, uint32_t count, int32_t offset);
 
 private:
 

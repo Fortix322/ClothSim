@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "glad/glad.h"
+#include "Glad/include/glad/glad.h"
 
 struct ShaderSources
 {
@@ -34,6 +34,8 @@ private:
 	unsigned int CompileShader(unsigned int type, const std::string& str);
 
 private:
+
 	unsigned int m_RendererID;
+
 };
 

@@ -1,10 +1,11 @@
 #pragma once
 
 #include <array>
-#include "src/OpenGL/OpenGL.h"
 
-#include "vendor/glm/glm/glm.hpp"
-#include "vendor/glm/glm/gtx/projection.hpp"
+#include "OpenGL/OpenGL.h"
+
+#include "glm/glm/glm.hpp"
+#include "glm/glm/gtx/projection.hpp"
 
 class BatchRenderer
 {

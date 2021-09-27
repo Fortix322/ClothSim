@@ -2,11 +2,11 @@
 
 #include <Windows.h>
 
-#include "src/Window/Window.h"
+#include "Window/Window.h"
 
-#include "glad/glad.h"
+#include "Glad/include/glad/glad.h"
 
-#include "GLFW/glfw3.h"
+#include "GLFW/include/GLFW/glfw3.h"
 
 #pragma comment(lib, "RayCasting/vendor/GLFW/include/GLFW/glfw3.lib")
 

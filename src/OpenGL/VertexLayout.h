@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "glad/glad.h"
+#include "Glad/include/glad/glad.h"
 
 struct VertexLayoutElements 
 {

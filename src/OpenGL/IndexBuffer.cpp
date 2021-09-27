@@ -23,7 +23,7 @@ void IndexBuffer::Unbind() const
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void IndexBuffer::StreamData(const void* data, uint32_t size, int32_t offset)
+void IndexBuffer::StreamData(const void* data, uint32_t count, int32_t offset)
 {
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, size, data);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, count * sizeof(unsigned int), data);
 }
