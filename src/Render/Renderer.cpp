@@ -20,12 +20,13 @@ struct Vertex
 
 		return layout;
 	}
+
 };
 
 struct RendererStorage
 {
-	static const uint32_t MaxQuads = 1000;
-	static const uint32_t MaxVertices = MaxQuads * 4 * sizeof(Vertex);
+	static const uint32_t MaxQuads = 10000;
+	static const uint32_t MaxVertices = MaxQuads * 4;
 	static const uint32_t MaxIndices = MaxQuads * 6;
 
 	Vertex* data;
@@ -39,10 +40,15 @@ struct RendererStorage
 	unsigned int QuadsCount = 0;
 
 	RendererStorage(const char* vertShader, const char* fragShader)
-		: ebo(MaxIndices), vbo(MaxVertices), shader(vertShader, fragShader)
+		: ebo(MaxIndices), vbo(MaxVertices * sizeof(Vertex)), shader(vertShader, fragShader)
 	{
 		data = new Vertex[MaxVertices];
 		dataPtr = data;
+		
+		std::cout << MaxQuads << std::endl;
+		std::cout << MaxVertices << std::endl;
+		std::cout << MaxIndices << std::endl;
+
 	}
 
 	~RendererStorage()
@@ -55,6 +61,9 @@ static RendererStorage* s_Storage;
 
 void Renderer::Init(const char* vertShader, const char* fragShader)
 {
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
 	s_Storage = new RendererStorage(vertShader, fragShader);
 
 	s_Storage->vao.Bind();
@@ -89,7 +98,7 @@ void Renderer::Shutdown()
 	delete s_Storage;
 }
 
-void Renderer::DrawQuad(glm::vec2 pos, glm::vec2 size, glm::vec4 color)
+void Renderer::DrawQuad(glm::vec2 pos, glm::vec2 size, glm::vec4 color, eLayers layer)
 {
 	if (s_Storage->QuadsCount >= RendererStorage::MaxQuads)
 	{
@@ -99,18 +108,18 @@ void Renderer::DrawQuad(glm::vec2 pos, glm::vec2 size, glm::vec4 color)
 
 	s_Storage->QuadsCount++;
 
-	*s_Storage->dataPtr++ = { glm::vec3(pos.x - size.x / 2.0f, pos.y - size.y / 2.0f, 0.0f), color };
-	*s_Storage->dataPtr++ = { glm::vec3(pos.x + size.x / 2.0f, pos.y - size.y / 2.0f, 0.0f), color };
-	*s_Storage->dataPtr++ = { glm::vec3(pos.x - size.x / 2.0f, pos.y + size.y / 2.0f, 0.0f), color };
-	*s_Storage->dataPtr++ = { glm::vec3(pos.x + size.x / 2.0f, pos.y + size.y / 2.0f, 0.0f), color };
-
-	s_Storage->vbo.StreamData(s_Storage->data, (uint64_t)s_Storage->dataPtr - (uint64_t)s_Storage->data, 0);
+	*s_Storage->dataPtr++ = { glm::vec3(pos.x - size.x / 2.0f, pos.y - size.y / 2.0f, (int)layer * 0.1f), color };
+	*s_Storage->dataPtr++ = { glm::vec3(pos.x + size.x / 2.0f, pos.y - size.y / 2.0f, (int)layer * 0.1f), color };
+	*s_Storage->dataPtr++ = { glm::vec3(pos.x - size.x / 2.0f, pos.y + size.y / 2.0f, (int)layer * 0.1f), color };
+	*s_Storage->dataPtr++ = { glm::vec3(pos.x + size.x / 2.0f, pos.y + size.y / 2.0f, (int)layer * 0.1f), color };
 }
 
 void Renderer::DrawSubmit()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	s_Storage->vbo.StreamData(s_Storage->data, (uint64_t)s_Storage->dataPtr - (uint64_t)s_Storage->data, 0);
 
 	glDrawElements(GL_TRIANGLES, s_Storage->QuadsCount * 6, GL_UNSIGNED_INT, 0);
 }

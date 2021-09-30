@@ -1,5 +1,18 @@
 #include "ParticleSystem.h"
 
+float RandomFloat(float min, float max)
+{
+	// this  function assumes max > min, you may want 
+	// more robust error checking for a non-debug build
+	assert(max > min);
+	float random = ((float)rand()) / (float)RAND_MAX;
+
+	// generate (in your case) a float between 0 and (4.5-.78)
+	// then add .78, giving you a float between .78 and 4.5
+	float range = max - min;
+	return (random * range) + min;
+}
+
 static glm::vec3 vmin(const glm::vec3& lvec, const glm::vec3& rvec)
 {
 	return glm::vec3(fmin(lvec.x, rvec.x), fmin(lvec.y, rvec.y), fmin(lvec.z, rvec.z));
@@ -16,17 +29,17 @@ static glm::vec3 clamp(const glm::vec3& vec, const glm::vec3& min, const glm::ve
 }
 
 ParticleSystem::ParticleSystem()
-	: m_Forces(s_MaxParticles), m_ParticlesPos(s_MaxParticles), m_OldParticlesPos(s_MaxParticles), m_Mass(s_MaxParticles)
+	: m_Forces(s_MaxParticles), m_ParticlesPos(s_MaxParticles), m_OldParticlesPos(s_MaxParticles)
 {
 	for (size_t i = 0; i < s_MaxParticles; i++)
 	{
-		m_ParticlesPos[i] = glm::vec3(0.0f + i * 0.2f, 0.0f, 0.0f);
-		m_OldParticlesPos[i] = glm::vec3(0.0f + i * 0.2f, 0.0f, 0.0f);
-		m_Mass[i] = 1.0f;
+		//m_ParticlesPos[i] = glm::vec3(RandomFloat(-1.0f, 1.0f), RandomFloat(-1.0f, 1.0f), 0.0f);
+		m_ParticlesPos[i] = glm::vec3(0.0f, 0.0f, 0.0f);
+		m_OldParticlesPos[i] = m_ParticlesPos[i];
 	}
+	m_ParticlesPos[1] = glm::vec3(0.2f, 0.0f, 0.0f);
 
 	m_Joins.push_back(Joint(0, 1, 0.5f));
-	m_Mass[0] = 1.0f;
 }
 
 ParticleSystem::~ParticleSystem()
@@ -80,10 +93,11 @@ void ParticleSystem::SatisfyConstraints()
 		{
 			glm::vec3 delta = m_ParticlesPos[m_Joins[i].rPointInd] - m_ParticlesPos[m_Joins[i].lPointInd];
 			float deltaLen = sqrt(glm::dot(delta, delta));
-			float diff = (deltaLen - m_Joins[i].distance) / (deltaLen * (m_Mass[m_Joins[i].rPointInd] + m_Mass[m_Joins[i].lPointInd]));
-			m_ParticlesPos[m_Joins[i].lPointInd] += delta * m_Mass[m_Joins[i].lPointInd] * diff;
-			m_ParticlesPos[m_Joins[i].rPointInd] -= delta * m_Mass[m_Joins[i].rPointInd] * diff;
+			float diff = (deltaLen - m_Joins[i].distance) / deltaLen;
+			m_ParticlesPos[m_Joins[i].lPointInd] += delta * 0.5f * diff;
+			m_ParticlesPos[m_Joins[i].rPointInd] -= delta * 0.5f * diff;
 		}
 
+		m_ParticlesPos[0] *= 0.0f;
 	}
 }

@@ -27,6 +27,9 @@ public:
 
 	void UniformMat4(const std::string& name, float* data);
 
+	void UniformVec4(const std::string& name, float* data);
+
+
 private:
 
 	ShaderSources ReadShadersFromFiles(const std::string& vertShaderFile, const std::string& fragShaderFile);

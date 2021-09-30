@@ -43,13 +43,12 @@ private:
 	std::vector<glm::vec3> m_ParticlesPos;
 	std::vector<glm::vec3> m_OldParticlesPos;
 	std::vector<glm::vec3> m_Forces;
-	std::vector<float> m_Mass;
 
 	std::vector<Joint> m_Joins;
 
 	float m_Deltatime;
 
-	static const uint32_t s_MaxParticles = 2;
+	static const uint32_t s_MaxParticles = 10000;
 	const float s_Gravity = -10.0f;
 
 };

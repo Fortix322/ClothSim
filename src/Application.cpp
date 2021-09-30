@@ -73,15 +73,21 @@ int main()
 	};*/
 
 	Renderer::Init("res/test.vert.glsl", "res/test.frag.glsl");
-
 	while (!glfwWindowShouldClose((GLFWwindow*)win->GetNativeWindow())) 
 	{
-		Renderer::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f });
+		auto& pos = particles.GetPositions();
+
+		for (size_t i = 0; i < pos.size(); i++)
+		{
+			Renderer::DrawQuad({ pos[i].x, pos[i].y }, { 0.025f, 0.025f }, { 1.0f, 1.0f, 1.0f, 1.0f });
+		}
+
 		Renderer::DrawSubmit();
-		win->OnUpdate();
 		Renderer::Flush();
+
 		particles.Timestep();
-		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+		//std::this_thread::sleep_for(std::chrono::milliseconds(16));
+		win->OnUpdate();
 	}
 
 	Renderer::Shutdown();

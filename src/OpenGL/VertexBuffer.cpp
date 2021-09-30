@@ -36,5 +36,6 @@ void VertexBuffer::InvalidateBufferData() const
 
 void VertexBuffer::StreamData(const void* data, uint32_t size, int32_t offset)
 {
+	Bind();
 	glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
 }
