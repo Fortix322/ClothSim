@@ -32,7 +32,6 @@ GLFWWindow::~GLFWWindow()
     {
         glfwTerminate();
     }
-
 }
 
 void GLFWWindow::OnUpdate()

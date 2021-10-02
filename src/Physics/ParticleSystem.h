@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <thread>
 
 #include "glm/glm/vec3.hpp"
 #include "glm/glm/geometric.hpp"
@@ -48,7 +49,7 @@ private:
 
 	float m_Deltatime;
 
-	static const uint32_t s_MaxParticles = 10000;
+	static const uint32_t s_MaxParticles = 20000;
 	const float s_Gravity = -10.0f;
 
 };

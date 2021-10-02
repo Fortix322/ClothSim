@@ -7,6 +7,8 @@
 
 #include "GLFW/include/GLFW/glfw3.h"
 
+#include <chrono>
+
 void LoadGL()
 {
 	std::cout << gladLoadGL() << std::endl;
@@ -85,7 +87,9 @@ int main()
 		Renderer::DrawSubmit();
 		Renderer::Flush();
 
+
 		particles.Timestep();
+
 		//std::this_thread::sleep_for(std::chrono::milliseconds(16));
 		win->OnUpdate();
 	}

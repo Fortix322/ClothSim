@@ -1,5 +1,7 @@
 #include "ParticleSystem.h"
 
+static const uint16_t s_ThreadCount = std::thread::hardware_concurrency();
+
 float RandomFloat(float min, float max)
 {
 	// this  function assumes max > min, you may want 
@@ -33,8 +35,8 @@ ParticleSystem::ParticleSystem()
 {
 	for (size_t i = 0; i < s_MaxParticles; i++)
 	{
-		//m_ParticlesPos[i] = glm::vec3(RandomFloat(-1.0f, 1.0f), RandomFloat(-1.0f, 1.0f), 0.0f);
-		m_ParticlesPos[i] = glm::vec3(0.0f, 0.0f, 0.0f);
+		m_ParticlesPos[i] = glm::vec3(RandomFloat(-1.0f, 1.0f), RandomFloat(-1.0f, 1.0f), 0.0f);
+		//m_ParticlesPos[i] = glm::vec3(0.0f, 0.0f, 0.0f);
 		m_OldParticlesPos[i] = m_ParticlesPos[i];
 	}
 	m_ParticlesPos[1] = glm::vec3(0.2f, 0.0f, 0.0f);
@@ -59,6 +61,38 @@ void ParticleSystem::Timestep()
 
 void ParticleSystem::CalculatePositions()
 {
+	/*auto lambda = [&](uint32_t index, uint32_t offset)
+	{
+		for (; offset; offset--)
+		{
+			auto prevPos = m_ParticlesPos[index];
+			m_ParticlesPos[index] = 2.0f * m_ParticlesPos[index] - m_OldParticlesPos[index] + m_Forces[index] * m_Deltatime * m_Deltatime;
+			m_OldParticlesPos[index] = prevPos;
+			index += s_ThreadCount;
+		}
+	};*/
+
+#define ASYNC 0
+
+#if ASYNC
+
+	std::vector<std::thread> workers;
+
+	uint32_t offset = m_ParticlesPos.size() / s_ThreadCount;
+	uint32_t additionalOffset = m_ParticlesPos.size() % s_ThreadCount;
+
+	for (size_t i = 0; i < s_ThreadCount; i++)
+	{
+		workers.push_back(std::thread(lambda, i, i < additionalOffset ? offset + 1 : offset));
+	}
+
+	for (size_t i = 0; i < s_ThreadCount; i++)
+	{
+		workers[i].join();
+	}
+
+#else
+
 	for (size_t i = 0; i < m_ParticlesPos.size(); i++)
 	{
 		auto prevPos = m_ParticlesPos[i];
@@ -66,6 +100,7 @@ void ParticleSystem::CalculatePositions()
 		m_OldParticlesPos[i] = prevPos;
 	}
 
+#endif
 }
 
 void ParticleSystem::ApplyForces()
