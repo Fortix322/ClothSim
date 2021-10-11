@@ -2,19 +2,6 @@
 
 static const uint16_t s_ThreadCount = std::thread::hardware_concurrency();
 
-float RandomFloat(float min, float max)
-{
-	// this  function assumes max > min, you may want 
-	// more robust error checking for a non-debug build
-	assert(max > min);
-	float random = ((float)rand()) / (float)RAND_MAX;
-
-	// generate (in your case) a float between 0 and (4.5-.78)
-	// then add .78, giving you a float between .78 and 4.5
-	float range = max - min;
-	return (random * range) + min;
-}
-
 static glm::vec3 vmin(const glm::vec3& lvec, const glm::vec3& rvec)
 {
 	return glm::vec3(fmin(lvec.x, rvec.x), fmin(lvec.y, rvec.y), fmin(lvec.z, rvec.z));
@@ -31,17 +18,7 @@ static glm::vec3 clamp(const glm::vec3& vec, const glm::vec3& min, const glm::ve
 }
 
 ParticleSystem::ParticleSystem()
-	: m_Forces(s_MaxParticles), m_ParticlesPos(s_MaxParticles), m_OldParticlesPos(s_MaxParticles)
 {
-	for (size_t i = 0; i < s_MaxParticles; i++)
-	{
-		m_ParticlesPos[i] = glm::vec3(RandomFloat(-1.0f, 1.0f), RandomFloat(-1.0f, 1.0f), 0.0f);
-		//m_ParticlesPos[i] = glm::vec3(0.0f, 0.0f, 0.0f);
-		m_OldParticlesPos[i] = m_ParticlesPos[i];
-	}
-	m_ParticlesPos[1] = glm::vec3(0.2f, 0.0f, 0.0f);
-
-	m_Joins.push_back(Joint(0, 1, 0.5f));
 }
 
 ParticleSystem::~ParticleSystem()
@@ -59,53 +36,48 @@ void ParticleSystem::Timestep()
 	SatisfyConstraints();
 }
 
+bool ParticleSystem::CreateParticles(uint32_t count, const glm::vec3* data)
+{
+	if (count + m_ParticlesCount > s_MaxParticles) return false;
+
+	for (uint32_t i = 0; i < count; i++)
+	{
+		m_ParticlesPos.push_back(data[i]);
+		m_Forces.push_back({0.0f, 0.0f, 0.0f});
+	}
+
+	m_OldParticlesPos = m_ParticlesPos;
+
+	m_ParticlesCount += count;
+
+	return true;
+}
+
+void ParticleSystem::CreateJoins(uint32_t count, const Joint* pairsIndices)
+{
+	for (uint32_t i = 0; i < count; i++)
+	{
+		m_Joins.push_back(pairsIndices[i]);
+	}
+}
+
 void ParticleSystem::CalculatePositions()
 {
-	/*auto lambda = [&](uint32_t index, uint32_t offset)
-	{
-		for (; offset; offset--)
-		{
-			auto prevPos = m_ParticlesPos[index];
-			m_ParticlesPos[index] = 2.0f * m_ParticlesPos[index] - m_OldParticlesPos[index] + m_Forces[index] * m_Deltatime * m_Deltatime;
-			m_OldParticlesPos[index] = prevPos;
-			index += s_ThreadCount;
-		}
-	};*/
+	auto t = std::chrono::high_resolution_clock::now();
 
-#define ASYNC 0
-
-#if ASYNC
-
-	std::vector<std::thread> workers;
-
-	uint32_t offset = m_ParticlesPos.size() / s_ThreadCount;
-	uint32_t additionalOffset = m_ParticlesPos.size() % s_ThreadCount;
-
-	for (size_t i = 0; i < s_ThreadCount; i++)
-	{
-		workers.push_back(std::thread(lambda, i, i < additionalOffset ? offset + 1 : offset));
-	}
-
-	for (size_t i = 0; i < s_ThreadCount; i++)
-	{
-		workers[i].join();
-	}
-
-#else
-
-	for (size_t i = 0; i < m_ParticlesPos.size(); i++)
+	for (size_t i = 0; i < m_ParticlesCount; i++)
 	{
 		auto prevPos = m_ParticlesPos[i];
 		m_ParticlesPos[i] = 2.0f * m_ParticlesPos[i] - m_OldParticlesPos[i] + m_Forces[i] * m_Deltatime * m_Deltatime;
 		m_OldParticlesPos[i] = prevPos;
 	}
 
-#endif
+	std::cout << "Calculate positions (SINGLE): " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - t).count() << std::endl;
 }
 
 void ParticleSystem::ApplyForces()
 {
-	for (size_t i = 0; i < s_MaxParticles; i++)
+	for (size_t i = 0; i < m_ParticlesCount; i++)
 	{
 		m_Forces[i].x = 0.0f;
 		m_Forces[i].y = s_Gravity;
@@ -117,9 +89,11 @@ void ParticleSystem::SatisfyConstraints()
 {
 	static const uint16_t s_MaxIterations = 10;
 
+	auto t = std::chrono::high_resolution_clock::now();
+
 	for (size_t i = 0; i < s_MaxIterations; i++)
 	{
-		for (size_t i = 0; i < m_ParticlesPos.size(); i++)
+		for (size_t i = 0; i < m_ParticlesCount; i++)
 		{
 			m_ParticlesPos[i] = clamp(m_ParticlesPos[i], glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 		}
@@ -133,6 +107,9 @@ void ParticleSystem::SatisfyConstraints()
 			m_ParticlesPos[m_Joins[i].rPointInd] -= delta * 0.5f * diff;
 		}
 
-		m_ParticlesPos[0] *= 0.0f;
+		if (m_ParticlesCount >= 1) m_ParticlesPos[0] = {0.0f, 1.0f, 0.0f};
 	}
+
+	std::cout << "Solve constraints (SINGLE) : " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - t).count() << std::endl;
+
 }

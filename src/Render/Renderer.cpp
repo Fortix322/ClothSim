@@ -2,7 +2,7 @@
 
 #include <array>
 
-struct Vertex
+struct QuadVertex
 {
 	glm::vec3 position;
 	glm::vec4 color;
@@ -23,37 +23,77 @@ struct Vertex
 
 };
 
+struct LineVertex
+{
+	glm::vec3 position;
+	glm::vec4 color;
+
+	static VertexLayout GetLayout()
+	{
+		VertexLayout layout;
+
+		layout.Push<float>(3);
+		layout.Push<float>(4);
+
+		return layout;
+	}
+
+};
+
+
 struct RendererStorage
 {
-	static const uint32_t MaxQuads = 10000;
-	static const uint32_t MaxVertices = MaxQuads * 4;
-	static const uint32_t MaxIndices = MaxQuads * 6;
+	static const uint32_t s_MaxQuads = 10000;
+	static const uint32_t s_MaxQuadVertices = s_MaxQuads * 4;
+	static const uint32_t s_MaxQuadIndices = s_MaxQuads * 6;
 
-	Vertex* data;
-	Vertex* dataPtr;
+	static const uint32_t s_MaxLines = 10000;
+	static const uint32_t s_MaxLineVertices = s_MaxLines * 2;
+	static const uint32_t s_MaxLineIndices = s_MaxLines * 2;
+
+	QuadVertex* quads;
+	QuadVertex* quadsPtr;
+
+	LineVertex* lines;
+	LineVertex* linesPtr;
 
 	Shader shader;
-	VertexArray vao;
-	IndexBuffer ebo;
-	VertexBuffer vbo;
+	VertexArray quadVao;
+	VertexArray lineVao;
 
-	unsigned int QuadsCount = 0;
+	IndexBuffer quadEbo;
+	IndexBuffer lineEbo;
+
+	VertexBuffer quadVbo;
+	VertexBuffer lineVbo;
+
+	unsigned int quadsCount = 0;
+	unsigned int linesCount = 0;
 
 	RendererStorage(const char* vertShader, const char* fragShader)
-		: ebo(MaxIndices), vbo(MaxVertices * sizeof(Vertex)), shader(vertShader, fragShader)
+		: quadEbo(s_MaxQuadIndices), quadVbo(s_MaxQuadVertices * sizeof(QuadVertex)), 
+		lineEbo(s_MaxLineIndices), lineVbo(s_MaxLineVertices * sizeof(LineVertex)),
+		shader(vertShader, fragShader)
 	{
-		data = new Vertex[MaxVertices];
-		dataPtr = data;
+		quads = new QuadVertex[s_MaxQuadVertices];
+		quadsPtr = quads;
 		
-		std::cout << MaxQuads << std::endl;
-		std::cout << MaxVertices << std::endl;
-		std::cout << MaxIndices << std::endl;
+		lines = new LineVertex[s_MaxLineVertices];
+		linesPtr = lines;
 
+		std::cout << s_MaxQuads << std::endl;
+		std::cout << s_MaxQuadVertices << std::endl;
+		std::cout << s_MaxQuadIndices << std::endl;
+
+		std::cout << s_MaxLines << std::endl;
+		std::cout << s_MaxLineVertices << std::endl;
+		std::cout << s_MaxLineIndices << std::endl;
 	}
 
 	~RendererStorage()
 	{
-		delete[] data;
+		delete[] quads;
+		delete[] lines;
 	}
 };
 
@@ -66,31 +106,43 @@ void Renderer::Init(const char* vertShader, const char* fragShader)
 
 	s_Storage = new RendererStorage(vertShader, fragShader);
 
-	s_Storage->vao.Bind();
-	s_Storage->vbo.Bind();
-	s_Storage->ebo.Bind();
+	s_Storage->quadVao.Bind();
+	s_Storage->quadVao.AddBuffer(s_Storage->quadVbo, QuadVertex::GetLayout());
 
-	s_Storage->vao.AddBuffer(s_Storage->vbo, Vertex::GetLayout());
+	s_Storage->lineVao.Bind();
+	s_Storage->lineVao.AddBuffer(s_Storage->lineVbo, LineVertex::GetLayout());
 
-	unsigned int* indicies = new unsigned int[RendererStorage::MaxIndices];
+	unsigned int* quadIndices = new unsigned int[RendererStorage::s_MaxQuadIndices];
+	unsigned int* lineIndices = new unsigned int[RendererStorage::s_MaxLineIndices];
 
 	uint32_t offset = 0;
-	for (uint32_t i = 0; i < RendererStorage::MaxIndices; i += 6)
+	for (uint32_t i = 0; i < RendererStorage::s_MaxQuadIndices; i += 6)
 	{
-		indicies[0 + i] = 0 + offset;
-		indicies[1 + i] = 1 + offset;
-		indicies[2 + i] = 2 + offset;
+		quadIndices[0 + i] = 0 + offset;
+		quadIndices[1 + i] = 1 + offset;
+		quadIndices[2 + i] = 2 + offset;
 
-		indicies[3 + i] = 1 + offset;
-		indicies[4 + i] = 2 + offset;
-		indicies[5 + i] = 3 + offset;
+		quadIndices[3 + i] = 1 + offset;
+		quadIndices[4 + i] = 2 + offset;
+		quadIndices[5 + i] = 3 + offset;
 
 		offset += 4;
 	}
 
-	s_Storage->ebo.StreamData(indicies, s_Storage->MaxIndices, 0);
+	offset = 0;
+	for (uint32_t i = 0; i < RendererStorage::s_MaxLineIndices; i += 2)
+	{
+		lineIndices[0 + i] = 0 + offset;
+		lineIndices[1 + i] = 1 + offset;
 
-	delete[] indicies;
+		offset += 2;
+	}
+
+	s_Storage->quadEbo.StreamData(quadIndices, s_Storage->s_MaxQuadIndices, 0);
+	s_Storage->lineEbo.StreamData(lineIndices, s_Storage->s_MaxLineIndices, 0);
+
+	delete[] quadIndices;
+	delete[] lineIndices;
 }
 
 void Renderer::Shutdown()
@@ -100,33 +152,63 @@ void Renderer::Shutdown()
 
 void Renderer::DrawQuad(glm::vec2 pos, glm::vec2 size, glm::vec4 color, eLayers layer)
 {
-	if (s_Storage->QuadsCount >= RendererStorage::MaxQuads)
+	if (s_Storage->quadsCount >= RendererStorage::s_MaxQuads)
 	{
 		Renderer::DrawSubmit();
 		Renderer::Flush();
 	}
 
-	s_Storage->QuadsCount++;
+	s_Storage->quadsCount++;
 
-	*s_Storage->dataPtr++ = { glm::vec3(pos.x - size.x / 2.0f, pos.y - size.y / 2.0f, (int)layer * 0.1f), color };
-	*s_Storage->dataPtr++ = { glm::vec3(pos.x + size.x / 2.0f, pos.y - size.y / 2.0f, (int)layer * 0.1f), color };
-	*s_Storage->dataPtr++ = { glm::vec3(pos.x - size.x / 2.0f, pos.y + size.y / 2.0f, (int)layer * 0.1f), color };
-	*s_Storage->dataPtr++ = { glm::vec3(pos.x + size.x / 2.0f, pos.y + size.y / 2.0f, (int)layer * 0.1f), color };
+	*s_Storage->quadsPtr++ = { glm::vec3(pos.x - size.x / 2.0f, pos.y - size.y / 2.0f, (int)layer * 0.1f), color };
+	*s_Storage->quadsPtr++ = { glm::vec3(pos.x + size.x / 2.0f, pos.y - size.y / 2.0f, (int)layer * 0.1f), color };
+	*s_Storage->quadsPtr++ = { glm::vec3(pos.x - size.x / 2.0f, pos.y + size.y / 2.0f, (int)layer * 0.1f), color };
+	*s_Storage->quadsPtr++ = { glm::vec3(pos.x + size.x / 2.0f, pos.y + size.y / 2.0f, (int)layer * 0.1f), color };
+}
+
+void Renderer::DrawLine(glm::vec2 pos1, glm::vec2 pos2, glm::vec4 color, eLayers layer)
+{
+	if (s_Storage->linesCount >= RendererStorage::s_MaxLines)
+	{
+		Renderer::DrawSubmit();
+		Renderer::Flush();
+	}
+
+	s_Storage->linesCount++;
+
+	*s_Storage->linesPtr++ = { glm::vec3(pos1.x, pos1.y, (int)layer * 0.1f), color };
+	*s_Storage->linesPtr++ = { glm::vec3(pos2.x, pos2.y, (int)layer * 0.1f), color };
 }
 
 void Renderer::DrawSubmit()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	s_Storage->quadVbo.StreamData(s_Storage->quads, (uint64_t)s_Storage->quadsPtr - (uint64_t)s_Storage->quads, 0);
+	s_Storage->lineVbo.StreamData(s_Storage->lines, (uint64_t)s_Storage->linesPtr - (uint64_t)s_Storage->lines, 0);
 
-	s_Storage->vbo.StreamData(s_Storage->data, (uint64_t)s_Storage->dataPtr - (uint64_t)s_Storage->data, 0);
-
-	glDrawElements(GL_TRIANGLES, s_Storage->QuadsCount * 6, GL_UNSIGNED_INT, 0);
+	s_Storage->quadVao.Bind();
+	s_Storage->quadEbo.Bind();
+	s_Storage->quadVbo.Bind();
+	glDrawElements(GL_TRIANGLES, s_Storage->quadsCount * 6, GL_UNSIGNED_INT, 0);
+	
+	s_Storage->lineVao.Bind();
+	s_Storage->lineEbo.Bind();
+	s_Storage->lineVbo.Bind();
+	glDrawElements(GL_LINES, s_Storage->linesCount * 2, GL_UNSIGNED_INT, 0);
 }
 
 void Renderer::Flush()
 {
-	s_Storage->vbo.InvalidateBufferData();
-	s_Storage->QuadsCount = 0;
-	s_Storage->dataPtr = s_Storage->data;
+	s_Storage->quadVbo.InvalidateBufferData();
+	s_Storage->quadsCount = 0;
+	s_Storage->quadsPtr = s_Storage->quads;
+
+	s_Storage->lineVbo.InvalidateBufferData();
+	s_Storage->linesCount = 0;
+	s_Storage->linesPtr = s_Storage->lines;
+}
+
+void Renderer::ClearScreen(glm::vec4 color)
+{
+	glClearColor(color.r, color.g, color.b, color.a);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

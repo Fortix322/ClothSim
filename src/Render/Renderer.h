@@ -29,7 +29,11 @@ public:
 
 	static void DrawQuad(glm::vec2 pos, glm::vec2 size, glm::vec4 color, eLayers layer = eLayers::UI);
 
+	static void DrawLine(glm::vec2 pos1, glm::vec2 pos2, glm::vec4 color, eLayers layer = eLayers::UI);
+
 	static void DrawSubmit();
+
+	static void ClearScreen(glm::vec4 color);
 
 	static void Flush();
 };

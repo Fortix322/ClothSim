@@ -25,5 +25,6 @@ void IndexBuffer::Unbind() const
 
 void IndexBuffer::StreamData(const void* data, uint32_t count, int32_t offset)
 {
+	Bind();
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, count * sizeof(unsigned int), data);
 }
