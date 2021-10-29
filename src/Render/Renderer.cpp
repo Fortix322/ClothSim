@@ -67,8 +67,8 @@ struct RendererStorage
 	VertexBuffer quadVbo;
 	VertexBuffer lineVbo;
 
-	unsigned int quadsCount = 0;
-	unsigned int linesCount = 0;
+	uint64_t quadsCount = 0;
+	uint64_t linesCount = 0;
 
 	RendererStorage(const char* vertShader, const char* fragShader)
 		: quadEbo(s_MaxQuadIndices), quadVbo(s_MaxQuadVertices * sizeof(QuadVertex)), 

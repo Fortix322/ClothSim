@@ -1,13 +1,12 @@
 #pragma once
 
-#include <vector>
-#include <thread>
-
-#include <chrono>
-#include <iostream>
-
 #include "glm/glm/vec3.hpp"
 #include "glm/glm/geometric.hpp"
+
+#include <vector>
+#include <thread>
+#include <chrono>
+#include <iostream>
 
 struct Joint
 {

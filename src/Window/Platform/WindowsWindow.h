@@ -1,9 +1,8 @@
 #pragma once
 
-#include <Windows.h>
-
 #include "src/Window/Window.h"
 
+#include <Windows.h>
 
 // Work in progress
 //TODO: Manage wndClass 

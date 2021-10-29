@@ -1,11 +1,11 @@
 #pragma once
 
+#include "Glad/include/glad/glad.h"
+
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
-
-#include "Glad/include/glad/glad.h"
 
 struct ShaderSources
 {

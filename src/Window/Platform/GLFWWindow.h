@@ -1,12 +1,11 @@
 #pragma once
 
-#include <Windows.h>
-
 #include "Window/Window.h"
 
 #include "Glad/include/glad/glad.h"
-
 #include "GLFW/include/GLFW/glfw3.h"
+
+#include <Windows.h>
 
 #pragma comment(lib, "RayCasting/vendor/GLFW/include/GLFW/glfw3.lib")
 

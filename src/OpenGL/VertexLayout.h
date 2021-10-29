@@ -1,8 +1,8 @@
 #pragma once
 
-#include <vector>
-
 #include "Glad/include/glad/glad.h"
+
+#include <vector>
 
 struct VertexLayoutElements 
 {

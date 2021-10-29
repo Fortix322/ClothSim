@@ -1,8 +1,8 @@
 #pragma once
 
-#include <cstdint>
-
 #include "Glad/include/glad/glad.h"
+
+#include <cstdint>
 
 class IndexBuffer
 {
@@ -21,6 +21,5 @@ public:
 private:
 
 	unsigned int m_RendererID;
-	
 };
 

@@ -1,9 +1,8 @@
 #pragma once
 
-#include <cstdint>
-
 #include "Glad/include/glad/glad.h"
 
+#include <cstdint>
 
 class VertexBuffer
 {
