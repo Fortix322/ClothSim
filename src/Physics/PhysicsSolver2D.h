@@ -21,11 +21,9 @@ public:
 
 	const std::vector<StickConstraint>& GetSticks() const;
 
-	void AddParticles(Particle* data, uint64_t count);
+	void CreateParticle(glm::vec2 pos, bool isMovable = true);
 
 	void CreateStick(uint64_t lInd, uint64_t rInd, float elogationRatio);
-
-
 
 private:
 

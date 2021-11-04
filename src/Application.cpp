@@ -9,11 +9,18 @@
 #include <thread>
 #include <chrono>
 
+#include <map>
+
 #define RANDOMFLOAT(min, max) min + (float)rand() / (float)RAND_MAX * (max - min)
 
 void LoadGL()
 {
 	std::cout << gladLoadGL() << std::endl;
+}
+
+void KeyCallback(eKey key, int test, eKeyAction action)
+{
+	std::cout << "Key: " << (int)key << "Action: " << (int)action << std::endl;
 }
 
 int main()
@@ -26,17 +33,23 @@ int main()
 	Renderer::Init("res/test.vert.glsl", "res/test.frag.glsl");
 	PhysicsSolver2D physic;
 
-	/*Particle test = Particle({ 0.0f, 0.0f });
-	Particle test2 = Particle({ 0.25f, 0.0f });
-	Particle test3 = Particle({ 0.32f, 0.55f });
+	//
+	const int partCount = 10;
 
-	physic.AddParticles(&test, 1);
-	physic.AddParticles(&test2, 1);							// FOR TESTS
-	physic.AddParticles(&test3, 1);
+	physic.CreateParticle({ 0.0f, 1.0f }, false);
 
-	physic.CreateStick(0, 1, 1.5f);
-	physic.CreateStick(1, 2, 1.5f);
-	physic.CreateStick(0, 2, 1.5f);*/
+	for (size_t i = 0; i < partCount; i++)
+	{
+		physic.CreateParticle({0.0f, 0.9f - (i + 1)  * 0.09f});									// FOR TESTS
+	}
+
+	for (size_t i = 0; i < partCount; i++)
+	{
+		physic.CreateStick(i, i + 1, 3.2f);
+	}
+	//
+
+	win->SetKeyCallback(KeyCallback);
 
 	while (!glfwWindowShouldClose((GLFWwindow*)win->GetNativeWindow()))
 	{
@@ -47,6 +60,19 @@ int main()
 		for (size_t i = 0; i < part.size(); i++)
 		{
 			Renderer::DrawQuad(part[i].GetPosition(), { 0.05f, 0.05f }, {0.0f, 0.0f, 0.0f, 0.0f});
+		}
+
+		auto& sticks = physic.GetSticks();
+
+		{
+			glm::vec2 lPos, rPos;
+			for (size_t i = 0; i < sticks.size(); i++)
+			{
+				if (sticks[i].IsBroken()) continue;
+				
+				sticks[i].GetPositions(lPos, rPos);
+				Renderer::DrawLine(lPos, rPos, { 0.0f, 0.0f, 0.0f, 0.0f });
+			}
 		}
 
 		Renderer::DrawSubmit();

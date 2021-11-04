@@ -32,7 +32,11 @@ void PhysicsSolver2D::Solve()
 
 	std::cout << "Calculate positions (SINGLE): " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - t).count() << std::endl;
 
+	t = std::chrono::high_resolution_clock::now();
+
 	SatisfyConstraints();
+
+	std::cout << "Calculate sticks (SINGLE): " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - t).count() << std::endl;
 }
 
 void PhysicsSolver2D::CalculatePositions(float deltaTime)
@@ -80,14 +84,11 @@ const std::vector<StickConstraint>& PhysicsSolver2D::GetSticks() const
 	return m_Sticks;
 }
 
-void PhysicsSolver2D::AddParticles(Particle* data, uint64_t count)
+void PhysicsSolver2D::CreateParticle(glm::vec2 pos, bool isMovable)
 {
-	for (uint64_t i = 0; i < count; i++)
-	{
-		m_Particles.push_back(data[i]);
-		m_OldPos.push_back(data[i].GetPosition());
-		m_Forces.push_back({ 0.0f, -10.0f});
-	}
+	m_Particles.push_back(Particle(pos, isMovable));
+	m_OldPos.push_back(m_Particles[m_Particles.size() - 1].GetPosition());
+	m_Forces.push_back({ 0.0f, -10.0f});
 }
 
 void PhysicsSolver2D::CreateStick(uint64_t lInd, uint64_t rInd, float elogationRatio)
