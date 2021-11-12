@@ -16,6 +16,8 @@ void StickConstraint::Satisfy()
 
 	float deltaLen = glm::length(delta);
 
+	if (deltaLen < m_RestLength) return;
+
 	if (deltaLen > m_RestLength * m_ElogationRatio)
 	{
 		m_Broken = true;

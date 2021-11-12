@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 
 enum class eKey
@@ -71,13 +72,16 @@ enum class eKey
 	KEY_ESCAPE,
 	KEY_ENTER,
 
+	KEY_MOUSE_BUTTON_LEFT,
+	KEY_MOUSE_BUTTON_RIGHT
+
 };
 
 enum class eKeyAction
 {
 	KEY_PRESS = 0,
 	KEY_RELEASE,
-	KEY_REPEAT,
+	KEY_REPEAT
 };
 
 struct WinProps 
@@ -94,7 +98,11 @@ struct WinProps
 	}
 };
 
-typedef void (*KEYCALLBACK)(eKey scanCode, int specKey, eKeyAction status);
+class Window;
+
+typedef void (*KEYCALLBACK)(eKey scanCode, int specKey, eKeyAction status, Window* window);
+typedef void (*MOUSECALLBACK)(eKey scanCode, eKeyAction status, double xPos, double yPos, Window* window);
+typedef void (*CURSORCALLBACK)(double xPos, double yPos, Window* window);
 
 class Window
 {
@@ -117,6 +125,10 @@ public:
 	virtual void* GetNativeWindow() = 0;
 
 	virtual void SetKeyCallback(KEYCALLBACK callback) = 0;
+
+	virtual void SetMouseButtonCallback(MOUSECALLBACK callback) = 0;
+
+	virtual void SetCursorCallback(CURSORCALLBACK callback) = 0;
 
 	virtual ~Window() {}
 };

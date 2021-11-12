@@ -10,7 +10,7 @@ out vec4 color;
 void main()
 {
 	vec3 pos = l_Pos;
-	pos.x *= 9.0f/16.0;
+	//pos.x *= 9.0f/16.0;
 	gl_Position = vec4(pos, 1.0f);
 
 	color = l_Color;

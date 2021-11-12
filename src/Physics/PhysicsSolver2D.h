@@ -25,6 +25,10 @@ public:
 
 	void CreateStick(uint64_t lInd, uint64_t rInd, float elogationRatio);
 
+	void DeleteParticle(uint64_t ind);
+
+	void DeleteStick(uint64_t ind);
+
 private:
 
 	void CalculatePositions(float deltaTime);

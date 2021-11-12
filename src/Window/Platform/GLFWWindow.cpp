@@ -78,7 +78,19 @@ void GLFWWindow::SetUserPointer(void* pointer)
 void GLFWWindow::SetKeyCallback(KEYCALLBACK callback)
 {
     m_KeyCallback = callback;
-    glfwSetKeyCallback(m_WndHandle, &GLFWWindow::AdaptKeyCallback);
+	glfwSetKeyCallback(m_WndHandle, &GLFWWindow::AdaptKeyCallback);
+}
+
+void GLFWWindow::SetMouseButtonCallback(MOUSECALLBACK callback)
+{
+	m_MouseCallback = callback;
+	glfwSetMouseButtonCallback(m_WndHandle, &GLFWWindow::AdaptMouseCallback);
+}
+
+void GLFWWindow::SetCursorCallback(CURSORCALLBACK callback)
+{
+	m_CursorCallback = callback;
+	glfwSetCursorPosCallback(m_WndHandle, AdaptCursorCallback);
 }
 
 void GLFWWindow::MakeContextCurrent()
@@ -163,6 +175,9 @@ void GLFWWindow::InitKeyMap()
 	s_KeyMap[GLFW_KEY_ESCAPE] =			eKey::KEY_ESCAPE;
 	s_KeyMap[GLFW_KEY_ENTER] =			eKey::KEY_ENTER;
 
+	s_KeyMap[GLFW_MOUSE_BUTTON_LEFT] =	eKey::KEY_MOUSE_BUTTON_LEFT;
+	s_KeyMap[GLFW_MOUSE_BUTTON_RIGHT] =	eKey::KEY_MOUSE_BUTTON_RIGHT;
+
 	s_KeyActionMap[GLFW_PRESS] =		eKeyAction::KEY_PRESS;
 	s_KeyActionMap[GLFW_RELEASE] =		eKeyAction::KEY_RELEASE;
 	s_KeyActionMap[GLFW_REPEAT] =		eKeyAction::KEY_REPEAT;
@@ -174,5 +189,27 @@ void GLFWWindow::AdaptKeyCallback(GLFWwindow* window, int key, int scancode, int
 
 	if (owner == NULL) __debugbreak();
 
-	owner->m_KeyCallback(s_KeyMap[key], mods, s_KeyActionMap[action]);
+	owner->m_KeyCallback(s_KeyMap[key], mods, s_KeyActionMap[action], owner);
+}
+
+void GLFWWindow::AdaptMouseCallback(GLFWwindow* window, int button, int action, int mods)
+{
+	GLFWWindow* owner = (GLFWWindow*)glfwGetWindowUserPointer(window);
+
+	if (owner == NULL) __debugbreak();
+
+	double xPos, yPos;
+
+	glfwGetCursorPos(owner->m_WndHandle, &xPos, &yPos);
+
+	owner->m_MouseCallback(s_KeyMap[button], s_KeyActionMap[action], xPos, yPos, owner);
+}
+
+void GLFWWindow::AdaptCursorCallback(GLFWwindow* window, double xPos, double yPos)
+{
+	GLFWWindow* owner = (GLFWWindow*)glfwGetWindowUserPointer(window);
+
+	if (owner == NULL) __debugbreak();
+
+	owner->m_CursorCallback(xPos, yPos, owner);
 }

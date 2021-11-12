@@ -98,3 +98,17 @@ void PhysicsSolver2D::CreateStick(uint64_t lInd, uint64_t rInd, float elogationR
 	m_Sticks.push_back(StickConstraint(&m_Particles[lInd], &m_Particles[rInd], 
 		glm::length(m_Particles[rInd].GetPosition() - m_Particles[lInd].GetPosition()), elogationRatio));
 }
+
+void PhysicsSolver2D::DeleteParticle(uint64_t ind)
+{
+	if (m_Particles.size() <= ind) __debugbreak();
+
+	m_Particles.erase(m_Particles.begin() + ind);
+ }
+
+void PhysicsSolver2D::DeleteStick(uint64_t ind)
+{
+	if (m_Sticks.size() <= ind) __debugbreak();
+
+	m_Sticks.erase(m_Sticks.begin() + ind);
+}

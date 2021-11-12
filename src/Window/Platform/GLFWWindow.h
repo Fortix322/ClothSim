@@ -15,6 +15,8 @@ public:
 
 	GLFWWindow(WinProps props);
 
+	GLFWWindow(const GLFWWindow& win) = delete;
+
 	virtual ~GLFWWindow();
 
 	void OnUpdate() override;
@@ -29,6 +31,10 @@ public:
 
 	void SetKeyCallback(KEYCALLBACK callback) override;
 
+	void SetMouseButtonCallback(MOUSECALLBACK callback) override;
+
+	void SetCursorCallback(CURSORCALLBACK callback) override;
+
 	void MakeContextCurrent() override;
 
 	void* GetNativeWindow() override { return m_WndHandle; }
@@ -41,11 +47,17 @@ private:
 
 	static void AdaptKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
+	static void AdaptMouseCallback(GLFWwindow* window, int button, int action, int mods);
+
+	static void AdaptCursorCallback(GLFWwindow* window, double xPos, double yPos);
+
 private:
 
 	GLFWwindow* m_WndHandle;
 
 	KEYCALLBACK m_KeyCallback;
+	MOUSECALLBACK m_MouseCallback;
+	CURSORCALLBACK m_CursorCallback;
 
 	void* m_UserPointer;
 

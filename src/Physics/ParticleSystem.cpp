@@ -23,7 +23,6 @@ ParticleSystem::ParticleSystem()
 
 ParticleSystem::~ParticleSystem()
 {
-
 }
 
 void ParticleSystem::Timestep()
