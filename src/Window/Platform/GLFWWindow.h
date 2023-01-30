@@ -7,8 +7,6 @@
 
 #include <map>
 
-#pragma comment(lib, "RayCasting/vendor/GLFW/include/GLFW/glfw3.lib")
-
 class GLFWWindow : public Window
 {
 public:

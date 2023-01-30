@@ -1,0 +1,16 @@
+﻿  Application.cpp
+  Input.cpp
+  IndexBuffer.cpp
+  Shader.cpp
+  VertexArray.cpp
+  VertexBuffer.cpp
+  Particle.cpp
+  ParticleSystem.cpp
+  PhysicsSolver2D.cpp
+  StickConstraint.cpp
+  Renderer.cpp
+  GLFWWindow.cpp
+  Generating Code...
+C:\Users\GGWP\source\repos\clothsim\src\Physics\StickConstraint.cpp(47): warning C4715: 'StickConstraint::GetPositions': not all control paths return a value
+  glad.c
+  ClothSim.vcxproj -> C:\Users\GGWP\source\repos\ClothSim\x64\Release\ClothSim.exe
